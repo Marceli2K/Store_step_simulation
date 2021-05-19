@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClientStream extends SimulationObject {
+
     int randomTime = 0;
     List<Client> klienci = new ArrayList<Client>();
     List<Client> klienciDoUsuniecia = new ArrayList<Client>();
@@ -33,7 +34,6 @@ public class ClientStream extends SimulationObject {
         prawdZdenerwowania = new Uniform(0, 1);
         timeToEqual = randomTime + simulation.getTime();
         randomTime = (int) uniformObject.getNext();
-
     }
 
     //    OBSLUGA DODAWANIA NOWEGO KLIENTA
@@ -58,8 +58,9 @@ public class ClientStream extends SimulationObject {
             this.newClient(xx);
             randomTime = (int) uniformObject.getNext();
             timeToEqual = randomTime + simulation.getTime();
-
         }
+
+
         try {
 //          OBSLUGA WSZYSTKICH KLIENTOW W PETLI
             for (Client client : klienci) {
@@ -70,12 +71,15 @@ public class ClientStream extends SimulationObject {
                     if ((kasa1.kolejkaDoKasy.size() >= kasa2.kolejkaDoKasy.size() && kasa2.kasaDziala) || !kasa1.kasaDziala) { // KLIENT IDZIE DO KASY 2
                         kasa2.addToKolejkaDoKasy(client);
                         System.out.println("Klient " + client.id + " udał się do kasy2");
+
                     } else if ((kasa1.kolejkaDoKasy.size() < kasa2.kolejkaDoKasy.size() && kasa1.kasaDziala) || !kasa2.kasaDziala) { // KLIENT IDZIE DO KASY 1
                         kasa1.addToKolejkaDoKasy(client);
                         System.out.println("Klient " + client.id + " udał się do kasy1");
                     }
                     client.inKasa(true);
                 }
+
+
                 // OBSLUGA ZNIECIERPLWIENIA U KLIENTA
                 if (client.getInKasa() && client.czasCierpliwosci <= simulation.getTime() && !client.wObsludze) {
                     Uniform y = new Uniform(0, 1);
@@ -93,8 +97,8 @@ public class ClientStream extends SimulationObject {
                     } else {
                         client.czasCierpliwosci += 2;
                     }
-
                 }
+
                 //Obsługa kasy 1
                 if (!kasa1.kolejkaDoKasy.isEmpty() && kasa1.kasaDziala) {
                     if (kasa1.kolejkaDoKasy.get(0) == client) {
@@ -113,12 +117,15 @@ public class ClientStream extends SimulationObject {
                             }
                         }
                     }
+
                 } else if (!kasa1.kasaDziala) {
                     if (kasa2.kolejkaDoKasy.size() >= 3) {
                         System.out.println("Kasa 1 znow dziala");
                         kasa1.kasaDziala = true;
                         kasa1.czasBezBlienta = 0;
                     }
+
+
                 } else if (kasa1.kolejkaDoKasy.isEmpty()) {
                     kasa1.wKolejce();
                     if (kasa1.czasBezBlienta >= 3 && kasa1.kasaDziala) {
@@ -135,7 +142,6 @@ public class ClientStream extends SimulationObject {
                             client.wObsludze = true;
                             System.out.println("kasjer - 2 podjął klienta.");
                         } else {
-
                             if (client.getCzasNaObsluge() == simulation.getTime()) { // ZAKONCZENIE OBSLUGI JESTLI CZAS PRZEZNACZONY NA NIA SIE SKONCZYL
                                 client.wObsludze = false;
                                 simulation.unregister(client);
@@ -146,6 +152,8 @@ public class ClientStream extends SimulationObject {
                             }
                         }
                     }
+
+
                 } else if (!kasa2.kasaDziala) {
                     if (kasa1.kolejkaDoKasy.size() >= 3) {
                         System.out.println("Kasa 2 znow dziala");
@@ -153,19 +161,22 @@ public class ClientStream extends SimulationObject {
                         kasa2.czasBezBlienta = 0;
                     }
 
+
                 } else if (kasa2.kolejkaDoKasy.isEmpty()) {
                     kasa2.wKolejce();
                     if (!kasa2.kasaDziala) {
                         System.out.println("Kasa 2 przestała działać");
-
                     }
-
                 }
             }
+
+
 //            OBSLUGA USUWANIA OBSLUZONYCH I ZNIECIERPLIWIONYCH KLIENTOW
             for (Client klienciRem : klienciDoUsuniecia) {
                 klienci.remove(klienciRem);
             }
+
+
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("");
         }
